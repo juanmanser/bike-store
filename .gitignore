@@ -1,0 +1,6 @@
+.dataform/
+.cache/
+.df-credentials.json
+.env
+*.env
+*.json

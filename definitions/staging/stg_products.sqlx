@@ -1,0 +1,17 @@
+config {
+  type: "view",
+  schema: "bike_store_staging",
+  description: "Catálogo limpio con costos y precios válidos",
+  tags: ["staging"]
+}
+
+SELECT
+  UPPER(TRIM(product_id)) AS product_id,
+  TRIM(product_name) AS product_name,
+  TRIM(category) AS category,
+  TRIM(brand) AS brand,
+  unit_cost,
+  list_price
+FROM ${ref("products")}
+WHERE unit_cost >= 0
+  AND list_price >= unit_cost

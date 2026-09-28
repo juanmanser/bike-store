@@ -1,0 +1,20 @@
+config {
+  type: "table",
+  schema: "bike_store_marts",
+  description: "Ventas y margen por mes, tienda y categoría",
+  tags: ["mart", "sales"]
+}
+
+SELECT
+  DATE_TRUNC(DATE(sold_at), MONTH) AS sales_month,
+  store_id,
+  store_name,
+  region,
+  category,
+  COUNT(DISTINCT order_id) AS order_count,
+  COUNT(*) AS sale_line_count,
+  SUM(quantity) AS units_sold,
+  SUM(net_sales) AS net_sales,
+  SUM(gross_margin) AS gross_margin
+FROM ${ref("sales_enriched")}
+GROUP BY 1, 2, 3, 4, 5

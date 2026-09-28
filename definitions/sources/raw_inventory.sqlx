@@ -1,0 +1,7 @@
+config {
+  type: "declaration",
+  database: "project-242e6158-c375-436e-aba",
+  schema: "bike_store_raw",
+  name: "inventory",
+  description: "Existencias actuales por tienda y producto"
+}

@@ -1,0 +1,21 @@
+config {
+  type: "view",
+  schema: "bike_store_staging",
+  description: "Ventas válidas con claves y descuentos normalizados",
+  tags: ["staging"]
+}
+
+SELECT
+  sale_line_id,
+  UPPER(TRIM(order_id)) AS order_id,
+  UPPER(TRIM(store_id)) AS store_id,
+  UPPER(TRIM(product_id)) AS product_id,
+  quantity,
+  unit_price,
+  COALESCE(discount_pct, 0) AS discount_pct,
+  sold_at
+FROM ${ref("sales")}
+WHERE sale_line_id IS NOT NULL
+  AND quantity > 0
+  AND unit_price >= 0
+  AND COALESCE(discount_pct, 0) BETWEEN 0 AND 1

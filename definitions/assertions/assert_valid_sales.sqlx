@@ -1,0 +1,13 @@
+config {
+  type: "assertion",
+  description: "Verifica claves y métricas no negativas en las ventas procesadas"
+}
+
+SELECT sale_line_id, order_id, store_id, product_id, quantity, net_sales
+FROM ${ref("sales_enriched")}
+WHERE sale_line_id IS NULL
+  OR order_id IS NULL
+  OR store_id IS NULL
+  OR product_id IS NULL
+  OR quantity <= 0
+  OR net_sales < 0

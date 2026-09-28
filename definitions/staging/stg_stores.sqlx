@@ -1,0 +1,14 @@
+config {
+  type: "view",
+  schema: "bike_store_staging",
+  description: "Nombres y ubicaciones normalizadas de tiendas",
+  tags: ["staging"]
+}
+
+SELECT
+  UPPER(TRIM(store_id)) AS store_id,
+  TRIM(store_name) AS store_name,
+  TRIM(city) AS city,
+  TRIM(region) AS region
+FROM ${ref("stores")}
+WHERE store_id IS NOT NULL

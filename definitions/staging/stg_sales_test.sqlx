@@ -1,0 +1,24 @@
+config {
+  type: "test",
+  dataset: "stg_sales"
+}
+
+input "sales" {
+  SELECT 1 AS sale_line_id, "ord-1" AS order_id, "st01" AS store_id,
+    "bk01" AS product_id, 2 AS quantity, NUMERIC "100.00" AS unit_price,
+    NUMERIC "0.10" AS discount_pct, TIMESTAMP("2026-03-05 10:00:00+00") AS sold_at
+  UNION ALL
+  SELECT 2 AS sale_line_id, "ord-2" AS order_id, "st01" AS store_id,
+    "bk01" AS product_id, 0 AS quantity, NUMERIC "100.00" AS unit_price,
+    NUMERIC "0.00" AS discount_pct, TIMESTAMP("2026-03-05 11:00:00+00") AS sold_at
+}
+
+SELECT
+  1 AS sale_line_id,
+  "ORD-1" AS order_id,
+  "ST01" AS store_id,
+  "BK01" AS product_id,
+  2 AS quantity,
+  NUMERIC "100.00" AS unit_price,
+  NUMERIC "0.10" AS discount_pct,
+  TIMESTAMP("2026-03-05 10:00:00+00") AS sold_at

@@ -1,0 +1,16 @@
+config {
+  type: "view",
+  schema: "bike_store_staging",
+  description: "Inventario limpio por tienda, producto y fecha de corte",
+  tags: ["staging"]
+}
+
+SELECT
+  UPPER(TRIM(store_id)) AS store_id,
+  UPPER(TRIM(product_id)) AS product_id,
+  units_on_hand,
+  reorder_point,
+  snapshot_date
+FROM ${ref("inventory")}
+WHERE units_on_hand >= 0
+  AND reorder_point >= 0

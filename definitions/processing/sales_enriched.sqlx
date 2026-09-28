@@ -1,0 +1,30 @@
+config {
+  type: "table",
+  schema: "bike_store_processing",
+  description: "Ventas con tienda, categoría, descuentos y margen bruto",
+  tags: ["processing"]
+}
+
+SELECT
+  s.sale_line_id,
+  s.order_id,
+  s.sold_at,
+  s.store_id,
+  st.store_name,
+  st.city,
+  st.region,
+  s.product_id,
+  p.product_name,
+  p.category,
+  p.brand,
+  s.quantity,
+  s.unit_price,
+  s.discount_pct,
+  s.quantity * s.unit_price AS gross_sales,
+  s.quantity * s.unit_price * s.discount_pct AS discount_amount,
+  s.quantity * s.unit_price * (1 - s.discount_pct) AS net_sales,
+  s.quantity * p.unit_cost AS cost_of_goods_sold,
+  s.quantity * s.unit_price * (1 - s.discount_pct) - s.quantity * p.unit_cost AS gross_margin
+FROM ${ref("stg_sales")} AS s
+JOIN ${ref("stg_stores")} AS st USING (store_id)
+JOIN ${ref("stg_products")} AS p USING (product_id)
