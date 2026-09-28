@@ -1,6 +1,6 @@
 config {
   type: "table",
-  schema: "bike_store_marts",
+  schema: "dataform_marts",
   description: "Ventas y margen por mes, tienda y categoría",
   tags: ["mart", "sales"]
 }

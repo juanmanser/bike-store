@@ -1,6 +1,6 @@
 config {
   type: "view",
-  schema: "bike_store_staging",
+  schema: "dataform_staging",
   description: "Catálogo limpio con costos y precios válidos",
   tags: ["staging"]
 }

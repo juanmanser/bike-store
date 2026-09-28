@@ -1,6 +1,6 @@
 config {
   type: "view",
-  schema: "bike_store_staging",
+  schema: "dataform_staging",
   description: "Inventario limpio por tienda, producto y fecha de corte",
   tags: ["staging"]
 }

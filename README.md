@@ -18,11 +18,11 @@ bike_store/
 
 ## Modelo
 
-- `bike_store_raw`: tablas de tiendas, productos, ventas e inventario.
-- `bike_store_staging`: vistas con claves normalizadas y filas válidas.
-- `bike_store_processing`: ventas con descuento, costo y margen bruto.
-- `bike_store_marts`: ventas mensuales por tienda/categoría y sugerencias de reposición.
-- `bike_store_assertions`: resultados de assertions de Dataform.
+- `raw_data`: tablas de tiendas, productos, ventas e inventario.
+- `dataform_staging`: vistas con claves normalizadas y filas válidas.
+- `dataform_processing`: ventas con descuento, costo y margen bruto.
+- `dataform_marts`: ventas mensuales por tienda/categoría y sugerencias de reposición.
+- `dataform_assertions`: resultados de assertions de Dataform.
 
 El setup contiene pocas filas deterministas para que el ejemplo sea reproducible y económico. Ejecuta `setup.sql` manualmente en BigQuery, con el proyecto `project-242e6158-c375-436e-aba` activo y ubicación `US`. El script solo crea el dataset de fuentes y cuatro tablas de datos de demostración.
 

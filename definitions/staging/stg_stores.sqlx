@@ -1,6 +1,6 @@
 config {
   type: "view",
-  schema: "bike_store_staging",
+  schema: "dataform_staging",
   description: "Nombres y ubicaciones normalizadas de tiendas",
   tags: ["staging"]
 }

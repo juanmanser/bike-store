@@ -1,6 +1,6 @@
 config {
   type: "table",
-  schema: "bike_store_processing",
+  schema: "dataform_processing",
   description: "Ventas con tienda, categoría, descuentos y margen bruto",
   tags: ["processing"]
 }

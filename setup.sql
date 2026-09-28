@@ -1,14 +1,13 @@
-CREATE SCHEMA IF NOT EXISTS `project-242e6158-c375-436e-aba.bike_store_raw`
-OPTIONS(location = "US");
+CREATE SCHEMA IF NOT EXISTS raw_data;
 
-CREATE OR REPLACE TABLE `project-242e6158-c375-436e-aba.bike_store_raw.stores` AS
+CREATE OR REPLACE TABLE raw_data.stores AS
 SELECT * FROM UNNEST([
   STRUCT("ST01" AS store_id, "Centro" AS store_name, "Madrid" AS city, "Centro" AS region),
   STRUCT("ST02" AS store_id, "Norte" AS store_name, "Bilbao" AS city, "Norte" AS region),
   STRUCT("ST03" AS store_id, "Costa" AS store_name, "Valencia" AS city, "Este" AS region)
 ]);
 
-CREATE OR REPLACE TABLE `project-242e6158-c375-436e-aba.bike_store_raw.products` AS
+CREATE OR REPLACE TABLE raw_data.products AS
 SELECT * FROM UNNEST([
   STRUCT("BK01" AS product_id, "Ridge 2" AS product_name, "Mountain" AS category, "Altura" AS brand, NUMERIC "820.00" AS unit_cost, NUMERIC "1199.00" AS list_price),
   STRUCT("BK02" AS product_id, "Sprint 5" AS product_name, "Road" AS category, "Velora" AS brand, NUMERIC "960.00" AS unit_cost, NUMERIC "1399.00" AS list_price),
@@ -17,7 +16,7 @@ SELECT * FROM UNNEST([
   STRUCT("AC02" AS product_id, "Commuter Light Set" AS product_name, "Accessories" AS category, "Northline" AS brand, NUMERIC "18.00" AS unit_cost, NUMERIC "39.00" AS list_price)
 ]);
 
-CREATE OR REPLACE TABLE `project-242e6158-c375-436e-aba.bike_store_raw.sales` AS
+CREATE OR REPLACE TABLE raw_data.sales AS
 SELECT * FROM UNNEST([
   STRUCT(1 AS sale_line_id, "ORD-1001" AS order_id, "ST01" AS store_id, "BK01" AS product_id, 1 AS quantity, NUMERIC "1199.00" AS unit_price, NUMERIC "0.05" AS discount_pct, TIMESTAMP("2026-01-12 10:15:00+00") AS sold_at),
   STRUCT(2 AS sale_line_id, "ORD-1002" AS order_id, "ST02" AS store_id, "BK02" AS product_id, 1 AS quantity, NUMERIC "1399.00" AS unit_price, NUMERIC "0.00" AS discount_pct, TIMESTAMP("2026-01-18 14:30:00+00") AS sold_at),
@@ -33,7 +32,7 @@ SELECT * FROM UNNEST([
   STRUCT(12 AS sale_line_id, "ORD-1012" AS order_id, "ST01" AS store_id, "AC01" AS product_id, 1 AS quantity, NUMERIC "69.00" AS unit_price, NUMERIC "0.00" AS discount_pct, TIMESTAMP("2026-06-15 12:55:00+00") AS sold_at)
 ]);
 
-CREATE OR REPLACE TABLE `project-242e6158-c375-436e-aba.bike_store_raw.inventory` AS
+CREATE OR REPLACE TABLE raw_data.inventory AS
 SELECT * FROM UNNEST([
   STRUCT("ST01" AS store_id, "BK01" AS product_id, 1 AS units_on_hand, 3 AS reorder_point, DATE("2026-06-30") AS snapshot_date),
   STRUCT("ST01" AS store_id, "BK02" AS product_id, 5 AS units_on_hand, 2 AS reorder_point, DATE("2026-06-30") AS snapshot_date),

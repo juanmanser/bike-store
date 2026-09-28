@@ -1,5 +1,5 @@
 defaultProject: "project-242e6158-c375-436e-aba"
 defaultLocation: "US"
-defaultDataset: "bike_store_staging"
-defaultAssertionDataset: "bike_store_assertions"
+defaultDataset: "dataform_staging"
+defaultAssertionDataset: "dataform_assertions"
 dataformCoreVersion: "3.0.56"

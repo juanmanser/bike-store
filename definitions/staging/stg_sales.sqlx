@@ -1,6 +1,6 @@
 config {
   type: "view",
-  schema: "bike_store_staging",
+  schema: "dataform_staging",
   description: "Ventas válidas con claves y descuentos normalizados",
   tags: ["staging"]
 }

@@ -26,7 +26,7 @@ Las filas están escritas de forma determinista para que la demostración sea re
 
 ## 3. Recorrido de los datos
 
-1. **Preparación de fuentes**: `setup.sql` crea el dataset `bike_store_raw` y carga `stores`, `products`, `sales` e `inventory`.
+1. **Preparación de fuentes**: `setup.sql` crea el dataset `raw_data` y carga `stores`, `products`, `sales` e `inventory`.
 2. **Declaraciones**: `definitions/sources/raw_*.sqlx` registran esas tablas existentes en el grafo de Dataform. Las declaraciones no crean las tablas raw.
 3. **Staging**: `definitions/staging/stg_*.sqlx` normalizan identificadores y textos, filtran cantidades/precios inválidos y estandarizan descuentos.
 4. **Procesamiento de ventas**: `definitions/processing/sales_enriched.sqlx` une ventas con tienda y catálogo, y calcula venta bruta, descuento, venta neta, costo y margen bruto.
@@ -39,7 +39,7 @@ Las filas están escritas de forma determinista para que la demostración sea re
 ## 4. Arquitectura
 
 ```text
-BigQuery bike_store_raw
+BigQuery raw_data
   ├── stores ───────> stg_stores ──────────────┐
   ├── products ─────> stg_products ────────────┼──> sales_enriched
   ├── sales ────────> stg_sales ───────────────┘       ├──> mart_monthly_sales
@@ -52,7 +52,7 @@ La carpeta `definitions/` organiza el trabajo por responsabilidad. Los `ref()` h
 
 ## 5. Guion de demo sugerido
 
-1. Abrir `workflow_settings.yaml` y explicar el proyecto, ubicación y datasets separados para raw, staging, processing, marts y assertions.
+1. Abrir `workflow_settings.yaml` y explicar el proyecto, ubicación y datasets compartidos de Dataform: raw_data, dataform_staging, dataform_processing, dataform_marts y dataform_assertions.
 2. Mostrar `setup.sql`: es deliberadamente pequeño; señalar que debe ejecutarse manualmente en BigQuery antes de las acciones dependientes.
 3. Abrir `stg_sales.sqlx` y explicar la normalización y el filtro `quantity > 0`.
 4. Abrir `sales_enriched.sqlx` y recorrer el join y las fórmulas de venta neta y margen.
