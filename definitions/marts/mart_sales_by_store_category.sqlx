@@ -1,0 +1,54 @@
+config {
+  type: "table",
+  schema: "dataform_marts",
+  description: "Desempeño de ventas, descuentos y margen cruzado por local comercial y categoría de producto",
+  columns: {
+    store_id: "Identificador único de la tienda o local",
+    store_name: "Nombre comercial del local",
+    city: "Ciudad donde se ubica el local",
+    region: "Región geográfica del local",
+    category: "Categoría de los productos vendidos",
+    order_count: "Cantidad de órdenes únicas que incluyeron la categoría en el local",
+    sale_line_count: "Total de líneas de venta de la categoría",
+    units_sold: "Cantidad total de unidades vendidas en la categoría",
+    gross_sales: "Monto total de ventas brutas para la categoría",
+    discount_amount: "Monto total de descuentos otorgados en la categoría",
+    net_sales: "Monto total de ventas netas para la categoría",
+    cost_of_goods_sold: "Costo total de mercaderías de la categoría",
+    gross_margin: "Margen bruto total de la categoría",
+    gross_margin_pct: "Porcentaje de margen bruto de la categoría sobre sus ventas netas"
+  },
+  tags: ["mart", "sales", "category"],
+  metadata: {
+    overview: "Esta tabla consolida las métricas comerciales desglosadas por local y categoría de producto. Reglas de calidad: Los descuentos y ventas deben ser no negativos.",
+    extraProperties: {
+      generic: {
+        type: "summary table",
+        system: "sales"
+      }
+    }
+  }
+}
+
+SELECT
+  store_id,
+  store_name,
+  city,
+  region,
+  category,
+  COUNT(DISTINCT order_id) AS order_count,
+  COUNT(sale_line_id) AS sale_line_count,
+  SUM(quantity) AS units_sold,
+  ROUND(SUM(gross_sales), 2) AS gross_sales,
+  ROUND(SUM(discount_amount), 2) AS discount_amount,
+  ROUND(SUM(net_sales), 2) AS net_sales,
+  ROUND(SUM(cost_of_goods_sold), 2) AS cost_of_goods_sold,
+  ROUND(SUM(gross_margin), 2) AS gross_margin,
+  ROUND(SAFE_DIVIDE(SUM(gross_margin), SUM(net_sales)) * 100, 2) AS gross_margin_pct
+FROM ${ref("sales_enriched")}
+GROUP BY
+  store_id,
+  store_name,
+  city,
+  region,
+  category

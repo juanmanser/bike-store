@@ -1,0 +1,22 @@
+config {
+  type: "assertion",
+  description: "Verifica que los descuentos y márgenes en las ventas enriquecidas estén dentro de rangos válidos"
+}
+
+SELECT
+  sale_line_id,
+  order_id,
+  store_id,
+  product_id,
+  discount_pct,
+  discount_amount,
+  gross_sales,
+  net_sales,
+  gross_margin
+FROM ${ref("sales_enriched")}
+WHERE discount_pct < 0
+  OR discount_pct > 1
+  OR discount_amount < 0
+  OR discount_amount > gross_sales
+  OR net_sales < 0
+  OR gross_sales < 0

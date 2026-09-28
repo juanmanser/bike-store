@@ -1,0 +1,53 @@
+config {
+  type: "table",
+  schema: "dataform_marts",
+  description: "Resumen consolidado de ventas, descuentos y margen bruto por local comercial",
+  columns: {
+    store_id: "Identificador único de la tienda o local",
+    store_name: "Nombre comercial del local",
+    city: "Ciudad donde se ubica el local",
+    region: "Región geográfica del local",
+    order_count: "Cantidad de órdenes de compra únicas procesadas",
+    sale_line_count: "Total de líneas de venta registradas",
+    units_sold: "Cantidad total de unidades vendidas",
+    gross_sales: "Monto total de ventas brutas sin descuento",
+    discount_amount: "Monto total de descuentos aplicados",
+    net_sales: "Monto total de ventas netas después de descuentos",
+    cost_of_goods_sold: "Costo total de mercaderías vendidas (COGS)",
+    gross_margin: "Margen bruto total generado",
+    gross_margin_pct: "Porcentaje de margen bruto sobre ventas netas",
+    avg_order_value: "Ticket promedio o valor promedio por orden"
+  },
+  tags: ["mart", "sales"],
+  metadata: {
+    overview: "Esta tabla consolida el desempeño comercial y financiero por local comercial. Reglas de calidad: Los descuentos y ventas netas deben ser no negativos.",
+    extraProperties: {
+      generic: {
+        type: "summary table",
+        system: "sales"
+      }
+    }
+  }
+}
+
+SELECT
+  store_id,
+  store_name,
+  city,
+  region,
+  COUNT(DISTINCT order_id) AS order_count,
+  COUNT(sale_line_id) AS sale_line_count,
+  SUM(quantity) AS units_sold,
+  ROUND(SUM(gross_sales), 2) AS gross_sales,
+  ROUND(SUM(discount_amount), 2) AS discount_amount,
+  ROUND(SUM(net_sales), 2) AS net_sales,
+  ROUND(SUM(cost_of_goods_sold), 2) AS cost_of_goods_sold,
+  ROUND(SUM(gross_margin), 2) AS gross_margin,
+  ROUND(SAFE_DIVIDE(SUM(gross_margin), SUM(net_sales)) * 100, 2) AS gross_margin_pct,
+  ROUND(SAFE_DIVIDE(SUM(net_sales), COUNT(DISTINCT order_id)), 2) AS avg_order_value
+FROM ${ref("sales_enriched")}
+GROUP BY
+  store_id,
+  store_name,
+  city,
+  region
