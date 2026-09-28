@@ -71,6 +71,3 @@ Ejemplos que sí conviene evitar sin planificar:
 
 > Bike Store es un caso de analítica retail con Dataform: transforma transacciones de ventas y stock en métricas accionables para negocio, manteniendo trazabilidad, calidad y dependencias visibles en el pipeline.
 
-## 8. Recomendación final
-
-Este proyecto funciona bien como caso de portfolio porque combina tres elementos: negocio claro, arquitectura reproducible y una narrativa fácil de comunicar. La clave es presentarlo como una solución práctica de analítica comercial, no como un conjunto de tablas aisladas.
