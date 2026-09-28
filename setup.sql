@@ -2,9 +2,9 @@ CREATE SCHEMA IF NOT EXISTS raw_data;
 
 CREATE OR REPLACE TABLE raw_data.stores AS
 SELECT * FROM UNNEST([
-  STRUCT("ST01" AS store_id, "Centro" AS store_name, "Madrid" AS city, "Centro" AS region),
-  STRUCT("ST02" AS store_id, "Norte" AS store_name, "Bilbao" AS city, "Norte" AS region),
-  STRUCT("ST03" AS store_id, "Costa" AS store_name, "Valencia" AS city, "Este" AS region)
+  STRUCT("ST01" AS store_id, "Centro" AS store_name, "CABA" AS city, "Centro" AS region),
+  STRUCT("ST02" AS store_id, "Norte" AS store_name, "Córdoba" AS city, "Norte" AS region),
+  STRUCT("ST03" AS store_id, "Costa" AS store_name, "Mendoza" AS city, "Oeste" AS region)
 ]);
 
 CREATE OR REPLACE TABLE raw_data.products AS
