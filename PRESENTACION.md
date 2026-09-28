@@ -1,77 +1,76 @@
-# Guía interna de presentación: Bike Store
+# Bike Store | Guía de presentación y extensión
 
-Documento de apoyo para explicar y demostrar el caso. No es necesario leerlo literalmente ni presentar el proyecto como un sistema de producción: es un ejemplo ELT con datos de demostración pequeños y controlados.
+Este proyecto demuestra cómo usar Dataform para construir un flujo de analítica retail con foco en ventas, margen y gestión de inventario. La idea es mostrar un caso claro de negocio, con una estructura reproducible y un modelo que puede ampliarse sin romper dependencias.
 
-## 1. Resumen del caso
+## 1. Objetivo del caso
 
-Una cadena ficticia de tres tiendas vende bicicletas y accesorios. El equipo necesita responder preguntas comerciales que las tablas operacionales no contestan directamente:
+Bike Store responde una necesidad típica de retail:
 
-- ¿Cómo evolucionan las ventas y el margen por mes, tienda y categoría?
-- ¿Qué productos están por debajo de su punto de reposición?
-- ¿Cuánto conviene pedir para recuperar un nivel de stock objetivo?
-- ¿Podemos confiar en las claves, cantidades y descuentos usados en esos indicadores?
+- entender cómo se comportan las ventas por tienda, categoría y mes
+- medir margen bruto real sobre cada transacción
+- detectar productos con riesgo de stock bajo
+- validar la calidad de los datos antes de publicar métricas
 
-El proyecto usa BigQuery como warehouse y Dataform para definir dependencias, transformar datos y validar calidad.
+## 2. Qué muestra el proyecto
 
-## 2. Alcance de la demostración
+El caso incluye:
 
-El setup genera un conjunto pequeño y reproducible:
+- 3 tiendas con ubicaciones locales: CABA, Córdoba y Mendoza
+- catálogo de bicicletas y accesorios
+- transacciones de ventas con descuento y fecha
+- registros de inventario para evaluar reposición
 
-- 3 tiendas en Madrid, Bilbao y Valencia.
-- 5 productos entre bicicletas de montaña, ruta, urbanas y accesorios.
-- 12 líneas de venta, distribuidas entre enero y junio de 2026.
-- 8 registros de inventario para una fecha de corte.
+Las tablas de ejemplo son pequeñas y deterministas, pero están diseñadas para reflejar un flujo real de analítica comercial.
 
-Las filas están escritas de forma determinista para que la demostración sea repetible. No representan una operación real ni permiten inferir tendencias de mercado.
+## 3. Flujo de datos
 
-## 3. Recorrido de los datos
+1. `raw_data` contiene las tablas base.
+2. `dataform_staging` limpia y normaliza nombres, claves y métricas.
+3. `dataform_processing` enriquece ventas con tienda, categoría y margen bruto.
+4. `dataform_marts` publica métricas de negocio y alertas operativas.
+5. `dataform_assertions` valida reglas clave.
 
-1. **Preparación de fuentes**: `setup.sql` crea el dataset `raw_data` y carga `stores`, `products`, `sales` e `inventory`.
-2. **Declaraciones**: `definitions/sources/raw_*.sqlx` registran esas tablas existentes en el grafo de Dataform. Las declaraciones no crean las tablas raw.
-3. **Staging**: `definitions/staging/stg_*.sqlx` normalizan identificadores y textos, filtran cantidades/precios inválidos y estandarizan descuentos.
-4. **Procesamiento de ventas**: `definitions/processing/sales_enriched.sqlx` une ventas con tienda y catálogo, y calcula venta bruta, descuento, venta neta, costo y margen bruto.
-5. **Marts de negocio**:
-   - `mart_monthly_sales`: pedidos, unidades, venta neta y margen por mes, tienda y categoría.
-   - `mart_inventory_replenishment`: existencias, punto de reposición, indicador de reposición y cantidad sugerida.
-6. **Calidad**: `stg_sales_test.sqlx` verifica que la vista de staging conserve una venta válida y excluya una con cantidad cero. `assert_valid_sales.sqlx` busca claves o métricas procesadas inválidas.
-7. **Compilación y ejecución**: Dataform compila acciones y dependencias antes de ejecutar SQL. En esta demo, GitHub Actions solo compila; no ejecuta consultas en BigQuery.
+## 4. Cómo explicar el proyecto en una demo
 
-## 4. Arquitectura
+1. Mostrar `workflow_settings.yaml` para explicar la convención de datasets compartidos.
+2. Mostrar `setup.sql` y señalar que carga una base de prueba bajo `raw_data`.
+3. Abrir `stg_sales.sqlx` y describir la limpieza y el filtro de registros inválidos.
+4. Abrir `sales_enriched.sqlx` para explicar joins con tiendas y catálogo y la lógica de net_sales y gross_margin.
+5. Mostrar `mart_monthly_sales` y `mart_inventory_replenishment` para conectar la capa técnica con decisiones de negocio.
+6. Referenciar la prueba de calidad y las assertions como una capa de gobernanza del dato.
 
-```text
-BigQuery raw_data
-  ├── stores ───────> stg_stores ──────────────┐
-  ├── products ─────> stg_products ────────────┼──> sales_enriched
-  ├── sales ────────> stg_sales ───────────────┘       ├──> mart_monthly_sales
-  └── inventory ────> stg_inventory + stg_stores/products
-                                                    └──> mart_inventory_replenishment
-                                                        assert_valid_sales
-```
+## 5. Cómo extender el caso sin romper la cadena
 
-La carpeta `definitions/` organiza el trabajo por responsabilidad. Los `ref()` hacen explícitas las dependencias para que Dataform construya el orden de ejecución.
+El modelo es fácil de escalar si se mantienen tres principios:
 
-## 5. Guion de demo sugerido
+- conservar los IDs de negocio estables
+- mantener los nombres de columnas y tablas en la estructura actual
+- modificar solo valores descriptivos como ciudad, región o nombre de tienda cuando haga falta
 
-1. Abrir `workflow_settings.yaml` y explicar el proyecto, ubicación y datasets compartidos de Dataform: raw_data, dataform_staging, dataform_processing, dataform_marts y dataform_assertions.
-2. Mostrar `setup.sql`: es deliberadamente pequeño; señalar que debe ejecutarse manualmente en BigQuery antes de las acciones dependientes.
-3. Abrir `stg_sales.sqlx` y explicar la normalización y el filtro `quantity > 0`.
-4. Abrir `sales_enriched.sqlx` y recorrer el join y las fórmulas de venta neta y margen.
-5. Mostrar el grafo compilado de Dataform y seguir una línea desde `sales` hasta `mart_monthly_sales`.
-6. Mostrar `mart_inventory_replenishment.sqlx` para explicar el punto de reposición y la cantidad sugerida.
-7. Ejecutar la prueba unitaria de `stg_sales` en modo Unit tests y observar cómo se descarta la cantidad cero.
-8. Si el entorno y permisos están preparados, ejecutar solo las acciones seleccionadas de bike_store y consultar los dos marts. No seleccionar proyectos o acciones ecommerce por error.
+Ejemplos de extensión válidos:
 
-## 6. Mensaje para la audiencia
+- agregar más tiendas
+- ampliar el catálogo de productos
+- incorporar nuevas regiones
+- crear un mart adicional por región o por canal
 
-> Este caso transforma transacciones y existencias de tiendas de bicicletas en métricas de margen e inventario. Dataform mantiene las dependencias visibles, hace compilable el flujo y permite probar reglas de calidad antes de programar ejecuciones.
+Ejemplos que sí conviene evitar sin planificar:
 
-## 7. Decisiones y límites
+- cambiar IDs de tienda o producto
+- renombrar columnas de la capa de staging sin ajustar downstream
+- modificar la estructura de `ref()` entre modelos sin revisar dependencias
 
-- `unit_cost` y `list_price` son atributos actuales del catálogo; el ejemplo no modela cambios históricos de precio o costo.
-- El inventario es una foto puntual, no un ledger de movimientos ni una serie histórica.
-- La cantidad sugerida usa una regla ilustrativa: `max(2 × reorder_point − units_on_hand, 0)`. El objetivo no reemplaza pronósticos ni considera tiempos de entrega.
-- `gross_margin` se calcula como venta neta menos costo de producto; no incluye impuestos, logística, salarios ni gastos de tienda.
-- Los datos cubren seis meses y no son adecuados para conclusiones estadísticas.
-- El `setup.sql` apunta explícitamente al proyecto `project-242e6158-c375-436e-aba` y ubicación `US`. Antes de usarlo en otro entorno, revisar ambos valores.
-- No subir credenciales, tokens, archivos `.df-credentials.json` ni datos personales al repositorio público.
-- Las pruebas de compilación no prueban permisos o disponibilidad de datasets en GCP. La ejecución de BigQuery requiere acceso y aprobación explícitos.
+## 6. Decisiones de diseño
+
+- `unit_cost` y `list_price` se mantienen como atributos del catálogo para generar margen.
+- El inventario es una foto puntual del stock y no un ledger histórico.
+- La regla de reposición es ilustrativa y útil para demostrar lógica operativa.
+- Los datos son de demostración y no están pensados como una base estadística completa.
+
+## 7. Mensaje para la audiencia
+
+> Bike Store es un caso de analítica retail con Dataform: transforma transacciones de ventas y stock en métricas accionables para negocio, manteniendo trazabilidad, calidad y dependencias visibles en el pipeline.
+
+## 8. Recomendación final
+
+Este proyecto funciona bien como caso de portfolio porque combina tres elementos: negocio claro, arquitectura reproducible y una narrativa fácil de comunicar. La clave es presentarlo como una solución práctica de analítica comercial, no como un conjunto de tablas aisladas.
