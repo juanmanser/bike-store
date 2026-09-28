@@ -36,14 +36,37 @@ La capa staging normaliza claves y textos y filtra registros inválidos. Dos ass
 
 Los marts publicados permiten analizar ventas, costos y rentabilidad por tienda y categoría, seguir su evolución mensual y detectar necesidades de reposición. Sus métricas y metadatos de negocio facilitan el consumo en herramientas de BI.
 
-## 4. Cómo explicar el proyecto en una demo
+### Muestra: resumen por local
 
-1. Mostrar `workflow_settings.yaml` para explicar la convención de datasets compartidos.
-2. Mostrar `setup.sql` y señalar que carga una base de prueba bajo `raw_data`.
-3. Abrir `stg_sales.sqlx` y describir la limpieza y el filtro de registros inválidos.
-4. Abrir `sales_enriched.sqlx` para explicar joins con tiendas y catálogo y la lógica de net_sales y gross_margin.
-5. Mostrar `mart_monthly_sales` y `mart_inventory_replenishment` para conectar la capa técnica con decisiones de negocio.
-6. Referenciar la prueba de calidad y las assertions como una capa de gobernanza del dato.
+La siguiente muestra resume las métricas del dataset de ejemplo. Ventas netas y margen bruto se calculan con las mismas reglas de `mart_sales_by_store`.
+Los importes están expresados en unidades monetarias del ejemplo; el setup no define una moneda.
+
+| Local | Ciudad | Región | Órdenes | Unidades | Ventas netas | Margen bruto |
+|---|---|---|---:|---:|---:|---:|
+| Centro | CABA | Centro | 5 | 8 | 4.948,23 | 1.842,23 |
+| Norte | Córdoba | Norte | 5 | 7 | 4.088,10 | 1.347,10 |
+| Sur | Mendoza | Sur | 4 | 5 | 3.206,18 | 1.110,18 |
+| Este | Rosario | Este | 4 | 6 | 4.049,08 | 1.342,08 |
+| Oeste | San Miguel de Tucumán | Noroeste | 4 | 6 | 4.908,19 | 1.854,19 |
+| **Total** |  |  | **22** | **32** | **21.199,78** | **7.495,78** |
+
+### Cómo se incorporan los controles
+
+| Capa / modelo | Control implementado | Resultado esperado |
+|---|---|---|
+| Staging: `stg_sales` | Normaliza IDs, reemplaza descuentos nulos por cero y filtra claves de línea nulas, cantidades no positivas, precios negativos y descuentos fuera de 0–1. | Ventas limpias y consistentes para el procesamiento. |
+| Staging: productos e inventario | Filtra costos negativos o precios menores al costo, y existencias o puntos de reposición negativos. | Catálogo e inventario dentro de rangos válidos. |
+| Assertions: `assert_valid_sales` y `assert_sales_discount_and_margin` | Comprueba claves requeridas, cantidades, descuentos y montos de venta dentro de reglas válidas. | Si encuentra filas que incumplen las reglas, la assertion reporta el problema en la ejecución. |
+| Test: `stg_sales_test` | Prueba una venta con IDs en minúsculas y una línea con cantidad cero. | Verifica normalización a mayúsculas y descarte de la línea inválida. |
+
+## 4. Cómo usar el proyecto con Dataform
+
+1. Abrir el repositorio en el workspace de Dataform y revisar `workflow_settings.yaml` y las definiciones del proyecto.
+2. Ejecutar `setup.sql` en BigQuery para crear y cargar las tablas de ejemplo en `raw_data`.
+3. Compilar el workspace en Dataform y revisar que no haya errores ni dependencias pendientes.
+4. Ejecutar el workflow. Dataform procesará las capas staging, processing y marts, además de las assertions configuradas.
+5. Confirmar que las acciones finalizaron correctamente y consultar los resultados en `dataform_marts`, especialmente `mart_sales_by_store` y `mart_inventory_replenishment`.
+6. Conectar los marts a una herramienta de BI o consultarlos directamente en BigQuery. Al cambiar los datos de entrada, volver a ejecutar el workflow.
 
 ## 5. Cómo extender el caso sin romper la cadena
 
