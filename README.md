@@ -4,7 +4,7 @@ Bike Store es un caso de analítica retail orientado a medir ventas, margen y st
 
 ## Business case
 
-La cadena ficticia opera en tres ubicaciones argentinas: CABA, Córdoba y Mendoza. El objetivo es convertir datos transaccionales en métricas operativas útiles para:
+La cadena ficticia opera en cinco ubicaciones argentinas: CABA, Córdoba, Mendoza, Rosario y San Miguel de Tucumán. El objetivo es convertir datos transaccionales en métricas operativas útiles para:
 
 - medir ventas por mes, tienda y categoría
 - analizar margen bruto por línea de producto
@@ -54,34 +54,15 @@ raw_data.inventory
 
 Los modelos principales son:
 
-- `stg_sales`: limpia y filtra ventas inválidas
+- `stg_sales`, `stg_products`, `stg_stores` y `stg_inventory`: normalizan datos y filtran registros inválidos
 - `sales_enriched`: une ventas, tienda y catálogo
-- `mart_monthly_sales`: venta neta y margen por mes, tienda y categoría
-- `mart_inventory_replenishment`: alertas de stock y sugerencia de reposición
+- `mart_sales_by_store` y `mart_sales_by_store_category`: resumen de ventas, costos y rentabilidad
+- `mart_monthly_sales`: evolución mensual de ventas y margen
+- `mart_inventory_replenishment`: alertas de stock y cantidad sugerida de reposición
 
-### Dashboard-ready summary layer
+### Calidad de datos y reporting
 
-Como recomendación de ampliar la capa de reporting, se puede incluir una vista resumen orientada a dashboard, por ejemplo `mart_dashboard_summary`, consolidando:
-
-- mes, tienda, categoría y producto
-- ventas netas y margen bruto
-- unidades vendidas y tickets
-- estado del stock frente al punto de reposición
-
-Esto deja una base más directa para paneles de negocio sin depender de consultas complejas sobre la capa raw o staging.
-
-### Data quality checks
-
-Además de los modelos de negocio, conviene mantener validaciones de calidad en `dataform_assertions`, por ejemplo:
-
-- ventas sin `store_id` o `product_id`
-- cantidades negativas o nulas
-- fechas inválidas o futuras sin sentido
-- duplicados de líneas de venta
-- productos o tiendas no presentes en el catálogo
-- stock por debajo del umbral de reposición
-
-Estas reglas permiten publicar solo datos confiables y hacer que el pipeline sea más útil para decisiones operativas y dashboarding.
+La calidad se controla en varias capas: staging normaliza claves y textos y filtra valores inválidos; dos assertions verifican la integridad de ventas, descuentos y montos; y `stg_sales_test` comprueba la limpieza con datos de prueba. Los marts de ventas incluyen métricas y metadatos de negocio para facilitar su interpretación y uso en herramientas de BI.
 
 ## Usage
 

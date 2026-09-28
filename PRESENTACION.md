@@ -15,7 +15,7 @@ Bike Store responde una necesidad típica de retail:
 
 El caso incluye:
 
-- 3 tiendas con ubicaciones locales: CABA, Córdoba y Mendoza
+- 5 tiendas con ubicaciones locales: CABA, Córdoba, Mendoza, Rosario y San Miguel de Tucumán
 - catálogo de bicicletas y accesorios
 - transacciones de ventas con descuento y fecha
 - registros de inventario para evaluar reposición
@@ -30,21 +30,11 @@ Las tablas de ejemplo son pequeñas y deterministas, pero están diseñadas para
 4. `dataform_marts` publica métricas de negocio y alertas operativas.
 5. `dataform_assertions` valida reglas clave.
 
-### 3.1. Vista resumen para dashboard
+### Calidad de datos y reporting
 
-Una mejora útil para el futuro es agregar una tabla resumen orientada a reporting, por ejemplo `mart_dashboard_summary`. Esta capa consolidaría métricas clave por mes, tienda, categoría y producto, permitiendo alimentar un tablero con consultas simples y rápidas.
+La capa staging normaliza claves y textos y filtra registros inválidos. Dos assertions controlan la integridad de ventas, descuentos y montos; además, `stg_sales_test` valida la limpieza con escenarios de prueba.
 
-### 3.2. Controles de calidad recomendados
-
-Además del análisis de negocio, conviene incorporar validaciones de dato en `dataform_assertions`, como:
-
-- líneas de venta sin tienda o producto
-- cantidades negativas o nulas
-- fechas inválidas o fuera de rango
-- registros duplicados
-- stock bajo el punto de reposición
-
-Estos controles hacen que el proyecto no solo muestre métricas, sino que también garantice calidad y confiabilidad para uso operacional y analítico.
+Los marts publicados permiten analizar ventas, costos y rentabilidad por tienda y categoría, seguir su evolución mensual y detectar necesidades de reposición. Sus métricas y metadatos de negocio facilitan el consumo en herramientas de BI.
 
 ## 4. Cómo explicar el proyecto en una demo
 
