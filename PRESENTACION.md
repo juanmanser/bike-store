@@ -30,6 +30,22 @@ Las tablas de ejemplo son pequeñas y deterministas, pero están diseñadas para
 4. `dataform_marts` publica métricas de negocio y alertas operativas.
 5. `dataform_assertions` valida reglas clave.
 
+### 3.1. Vista resumen para dashboard
+
+Una mejora útil para el futuro es agregar una tabla resumen orientada a reporting, por ejemplo `mart_dashboard_summary`. Esta capa consolidaría métricas clave por mes, tienda, categoría y producto, permitiendo alimentar un tablero con consultas simples y rápidas.
+
+### 3.2. Controles de calidad recomendados
+
+Además del análisis de negocio, conviene incorporar validaciones de dato en `dataform_assertions`, como:
+
+- líneas de venta sin tienda o producto
+- cantidades negativas o nulas
+- fechas inválidas o fuera de rango
+- registros duplicados
+- stock bajo el punto de reposición
+
+Estos controles hacen que el proyecto no solo muestre métricas, sino que también garantice calidad y confiabilidad para uso operacional y analítico.
+
 ## 4. Cómo explicar el proyecto en una demo
 
 1. Mostrar `workflow_settings.yaml` para explicar la convención de datasets compartidos.

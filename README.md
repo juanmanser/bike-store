@@ -59,6 +59,30 @@ Los modelos principales son:
 - `mart_monthly_sales`: venta neta y margen por mes, tienda y categoría
 - `mart_inventory_replenishment`: alertas de stock y sugerencia de reposición
 
+### Dashboard-ready summary layer
+
+Como recomendación de ampliar la capa de reporting, se puede incluir una vista resumen orientada a dashboard, por ejemplo `mart_dashboard_summary`, consolidando:
+
+- mes, tienda, categoría y producto
+- ventas netas y margen bruto
+- unidades vendidas y tickets
+- estado del stock frente al punto de reposición
+
+Esto deja una base más directa para paneles de negocio sin depender de consultas complejas sobre la capa raw o staging.
+
+### Data quality checks
+
+Además de los modelos de negocio, conviene mantener validaciones de calidad en `dataform_assertions`, por ejemplo:
+
+- ventas sin `store_id` o `product_id`
+- cantidades negativas o nulas
+- fechas inválidas o futuras sin sentido
+- duplicados de líneas de venta
+- productos o tiendas no presentes en el catálogo
+- stock por debajo del umbral de reposición
+
+Estas reglas permiten publicar solo datos confiables y hacer que el pipeline sea más útil para decisiones operativas y dashboarding.
+
 ## Usage
 
 Desde la raíz del repositorio:
