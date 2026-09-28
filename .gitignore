@@ -1,5 +1,6 @@
 .dataform/
 .cache/
+node_modules/
 .df-credentials.json
 .env
 *.env
